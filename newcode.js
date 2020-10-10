@@ -73,11 +73,6 @@ const changeDiceSide = (rolledNumber) => {
 const rollDice = () => {
   return new Promise((resolve, reject) => {
     let diceValue;
-    setTimeout(() => {
-      mySound = new sound("./Assets/diceroll.wav");
-      mySound.play();
-    }, 1000);
-
     const stopTimeInterval = setInterval(() => {
       domelements.cube.style.transform = `rotate3d(1, 1, 1,${deg + 1000}deg)`;
       deg += 720;
@@ -97,8 +92,6 @@ const updatePlayer = (playerNumber) => {
   domelements.diceText.textContent = `Player ${playerNumber} rolled the dice`;
   domelements.boardContainer.addEventListener("click", (event) => {
     event.stopImmediatePropagation();
-    mySound = new sound("./Assets/button click.mp3");
-    mySound.play();
     if (state.positionUpdated === false) {
       if (tokensArray.includes(`${event.target.id}`)) {
         console.log("updating the Token");
@@ -148,12 +141,14 @@ function updateToken(ids, className) {
       somef(player3);
     } else if (state.currentdiceValue + curPos > 15 && curPos - 16 < 0) {
       somef(player3, 16);
-    } else if (state.currentdiceValue + curPos > 7 && curPos < 8) {
-      if (player3.kills >= 1) {
-        if (state.currentdiceValue + curPos <= 11) {
-          state.currentdiceValue + curPos;
-          somef(player3, -12);
-        }
+    } else if (
+      state.currentdiceValue + curPos > 7 &&
+      state.currentdiceValue + curPos <= 13 &&
+      curPos < 8
+    ) {
+      if (player3.kills >= 0) {
+        state.currentdiceValue + curPos;
+        somef(player3, -12);
       } else {
         // alert("Please have a kill");
         // domelements.infoText.textContent = "Please have a kill";
@@ -166,18 +161,14 @@ function updateToken(ids, className) {
         state.currentdiceValue + curPos - 8 <= 19
       ) {
         somef(player3, 8);
-      }
-    } else if (curPos >= 16 && curPos <= 19) {
-      if (curPos + state.currentdiceValue <= 19) {
-        somef(player3);
-      } else if (curPos + state.currentdiceValue === 20) {
+      } else if (state.currentdiceValue + curPos >= 20) {
         somef(player3, -4);
+      } else if (state.currentdiceValue + curPos - 8 > 20) {
+        // domelements.infoText.textContent =
+        //   "Please other player as this player has no valid move";
+        alert("Please other player as this player has no valid move");
+        updatePlayer(state.personTobeRolled);
       }
-    } else if (curPos <= 23 && state.currentdiceValue + curPos - 8 > 20) {
-      // domelements.infoText.textContent =
-      //   "Please other player as this player has no valid move";
-      alert("Please other player as this player has no valid move");
-      updatePlayer(state.personTobeRolled);
     } else {
       somef(player3);
     }
@@ -296,14 +287,12 @@ function updateValueInPlayerState(
       player1.currentposition[CurIconPosition] += dice - stepsToSubstract;
       console.log(player1);
       state.personTobeRolled = 3;
-      checkWin(player1);
       break;
     }
     case 3: {
       player3.currentposition[CurIconPosition] += dice - stepsToSubstract;
       console.log(player3);
-      state.personTobeRolled = 3;
-      checkWin(player1);
+      state.personTobeRolled = 1;
       break;
     }
   }
@@ -355,19 +344,4 @@ function checkWin(player) {
     );
     alert(`Player ${state.personTobeRolled} won the Match`);
   }
-}
-
-function sound(src) {
-  this.sound = document.createElement("audio");
-  this.sound.src = src;
-  this.sound.setAttribute("preload", "auto");
-  this.sound.setAttribute("controls", "none");
-  this.sound.style.display = "none";
-  document.body.appendChild(this.sound);
-  this.play = function () {
-    this.sound.play();
-  };
-  this.stop = function () {
-    this.sound.pause();
-  };
 }
