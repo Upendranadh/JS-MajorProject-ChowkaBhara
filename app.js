@@ -303,7 +303,7 @@ function updateValueInPlayerState(
       player3.currentposition[CurIconPosition] += dice - stepsToSubstract;
       console.log(player3);
       state.personTobeRolled = 1;
-      checkWin(player1);
+      checkWin(player3);
       break;
     }
   }
